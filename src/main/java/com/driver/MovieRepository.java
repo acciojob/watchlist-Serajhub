@@ -1,57 +1,90 @@
 package com.driver;
 
-import java.util.*;
-
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Repository
 public class MovieRepository {
 
-    private HashMap<String, Movie> movieMap;
-    private HashMap<String, Director> directorMap;
-    private HashMap<String, List<String>> directorMovieMapping;
 
-    public MovieRepository(){
-        this.movieMap = new HashMap<String, Movie>();
-        this.directorMap = new HashMap<String, Director>();
-        this.directorMovieMapping = new HashMap<String, List<String>>();
+    HashMap<String , Movie> mdb = new HashMap<>();
+    HashMap<String , Director> ddb = new HashMap<>();
+
+    HashMap<String , List<String>> mddb = new HashMap<>();
+
+    public String addMovie(Movie movie) {
+        mdb.put(movie.getName() , movie);
+        return "Movie added success";
     }
 
-    public void saveMovie(Movie movie){
-        // your code here
+    public void adddirector(Director director) {
+        ddb.put(director.getName() , director);
     }
 
-    public void saveDirector(Director director){
-        // your code here
-    }
+    public void addMoviedirectorPair(String mname, String dname) {
 
-    public void saveMovieDirectorPair(String movie, String director){
-        if(movieMap.containsKey(movie) && directorMap.containsKey(director)){
-            // your code here
+        if(mddb.containsKey(dname)) {
+            List<String> res = mddb.get(dname);
+            res.add(mname);
+            mddb.put(dname, res);
+        }
+        else {
+            List<String> newlist = new ArrayList<>();
+            newlist.add(mname);
+            mddb.put(dname,newlist);
         }
     }
+    public Movie getMovieByName(String mname) {
 
-    public Movie findMovie(String movie){
-        // your code here
+        return mdb.get(mname);
     }
 
-    public Director findDirector(String director){
-        // your code here
+    public Director getDirectorByName(String dname) {
+        return ddb.get(dname);
     }
 
-    public List<String> findMoviesFromDirector(String director){
-        // your code here
+
+    public List<String> getMoviesByDirectorName(String dname) {
+
+        return mddb.get(dname);
     }
 
-    public List<String> findAllMovies(){
-        return new ArrayList<>(movieMap.keySet());
+    public List<Movie> findAllMovies() {
+
+        List<Movie> list =  new ArrayList<>(mdb.values());
+        return list;
     }
 
-    public void deleteDirector(String director){
-        // your code here
+    public void deleteDirectorByName(String dname) {
+        List<String> movies = mddb.get(dname);
+        for(String mname: movies)
+        {
+            mdb.remove(mname);
+        }
+        ddb.remove(dname);
+        mddb.remove(dname);
     }
 
-    public void deleteAllDirector(){
-        // your code here
+    public void deleteAllDirectors() {
+
+        List<String> dnames = new ArrayList<>();
+//        List<List<String>> mnames = new ArrayList<>();
+        List<List<String>> mnames = new ArrayList<>(mddb.values());
+        for(String dname : ddb.keySet())
+        {
+            ddb.remove(dname);
+//            mnames.add(mddb.get(dname));
+            mddb.remove(dname);
+        }
+        for(List<String> movies : mnames)
+        {
+            for(String name : movies)
+            {
+                mdb.remove(name);
+            }
+        }
     }
 }
